@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>UGV Security Model</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="AttackModel.html">UGV Attack Scenario Analysis</a></li>		
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+        <h1>UGV Security Modelling Based on AVHARM</h1>
+		<p>
+			We built a security modelling for UGV based on the AVHARM model introduced in the paper:
+			<em>“Graphical Security Modelling for Autonomous Vehicles: A Novel Approach to Threat Analysis and Defense Evaluation.”</em>
+		</p>
+		<p>
+			The original AVHARM framework models in-vehicle networks using: <strong>Attack Graphs</strong>, <strong>Attack Fault Trees</strong>, and <strong>Risk-based Scoring</strong>.
+		</p>
+		<p>
+			We adapted this model to UGV architecture using a sample scenario, detailing ECUs, buses, and vulnerabilities.
+			We assume a high-threat scenario where all critical nodes are vulnerable to root compromise.
+		</p>
+		<hr>
+		
+		<div class="section">
+			<h2>System Architecture</h2>
+			<p>We design an intensive cyber attack scenario where <strong>all nodes contain vulnerabilities</strong> that allow an adversary to gain root access to each component's system. There are two types of nodes in the architecture: <strong>Component Nodes</strong> and <strong>Access Nodes</strong>.</p>
+			<ul>
+				  <li><strong>Component Nodes</strong>: Responsible for main processing and control tasks of the UGV.</li>
+				  <li><strong>Access Nodes</strong>: Represent peripheral systems that either supply information to or receive commands from component nodes.</li>
+			</ul>
+			<h3>Component Nodes</h3>
+			<ol>
+				<li><strong>Autonomous Processor (AP)</strong>
+					<ul>
+						<li><strong>AP_sensor</strong>: Processes data from sensors (camera, radar, LIDAR).</li>
+						<li><strong>AP_nav</strong>: Handles navigation data from GNSS.</li>
+						<li><strong>AP_control</strong>: Converts data into control commands for the Vehicle Controller.</li>
+					</ul>
+				</li>
+				<li><strong>Vehicle Controller (VC)</strong>
+					<ul>
+						<li><strong>VC_rcv</strong>: Receives control commands from AP or others.</li>
+						<li><strong>VC_pass</strong>: Sends commands to steering, drive, brake systems.</li>
+						<li><strong>VC_start</strong>: Starts the vehicle; can issue manual drive commands.</li>
+					</ul>
+				</li>
+				<li><strong>Wire/Wireless Link (WL)</strong>
+					<ul>
+					  <li><strong>WL_recon</strong>: Receives commands from the external control station.</li>
+					  <li><strong>WL_trans</strong>: Forwards commands to vehicle or weapon systems.</li>
+					</ul>
+				</li>
+				<li><strong>Remote-Controlled Weapon System (RCWS)</strong>
+					<ul>
+						<li><strong>RCWS_comm</strong>: Communicates with WL for commands.</li>
+						<li><strong>RCWS_rcv</strong>: Receives targeting data from EO/IR.</li>
+					</ul>
+				</li>
+				<li><strong>Control Station (CS)</strong>
+					<ul>
+						<li><strong>CS_auth</strong>: Authenticates users for remote control via WL.</li>
+					</ul>
+				</li>
+			</ol>
+			<h3>Access Nodes</h3>
+			<h4>Connected to Autonomous Processor (AP):</h4>
+			<ul>
+				<li><strong>Camera</strong>: via Ethernet</li>
+				<li><strong>Radar</strong>: via Ethernet</li>
+				<li><strong>LIDAR</strong>: via Ethernet</li>
+				<li><strong>NavSys</strong>: via GNSS</li>
+			</ul>
+
+			<h4>Connected to Vehicle Controller (VC):</h4>
+			<ul>
+				<li><strong>Steering System</strong>: via CCAN</li>
+				<li><strong>Driving System</strong>: via CCAN</li>
+				<li><strong>Braking System</strong>: via CCAN</li>
+				<li><strong>PowerDist</strong>: via BCAN</li>
+				<li><strong>BSA</strong>: Battery Safety Actuator</li>
+			</ul>
+
+			<h4>Connected to Remote-Controlled Weapon System (RCWS):</h4>
+			<ul>
+				<li><strong>Weapon ECU</strong>: via Ethernet</li>
+				<li><strong>EO-IR</strong>: via Ethernet</li>
+			</ul>
+		</div>
+		<hr>
+		<h2>JSON Structure of in-vehicle network</h2>
+	    	<p>The JSON structure of an UGV internal network is illustrated below. This JSON data is then transformed into a structure suitable for visualizing the AVHARM.</p>
+	    	<p>We have provided the pre-processed JSON version in the next section. This data is optimized for importing into the <a href="AttackModel.html">AVHARM Visualization and Analysis</a> tool, which automatically generates the AVHARM model and calculates security metrics.</p>
+			<div class="toggle-heading" onclick="toggleCodeField('json1')">Baseline Scenario of BMW vehicle</div>
+			<div class="code-field" id="json1">
+				<button class="copy-button" onclick="copyToClipboard('json1')">Copy Code</button>
+				<pre>		  
+				{
+				"IVN": {
+					"BUS": [
+						{"key": "ETH", "name": "Ethernet", "protocol": "Ethernet" },
+						{"key": "CCAN", "name": "Chassis_CAN", "protocol": "CAN" },
+						{"key": "BCAN", "name": "Body_CAN", "protocol": "CAN" },
+						{"key": "Wireless", "name": "MilitaryDefined", "protocol": "Cellular" },
+						{"key": "GNSS", "name": "GNSS Bus", "protocol": "Satellite" }
+					],
+					"VUL": [
+						{"key": "v1", "name": "CVE-2019-11815", "prob": 0.59, "impact": 6.0},
+						{"key": "v2", "name": "CVE-2023-48691", "prob": 0.59, "impact": 6.0},
+						{"key": "v3", "name": "CVE-2021-3156", "prob": 0.59, "impact": 5.7},
+						{"key": "v4", "name": "CVE-2018-9311", "prob": 1.0, "impact": 6.1},
+						{"key": "v5", "name": "CVE-2018-9318", "prob": 1.0, "impact": 6.2},
+						{"key": "v6", "name": "EO-IR IR Manipulation", "prob": 0.59, "impact": 6.5},
+						{"key": "v7", "name": "CVE-2022-37061", "prob": 0.59, "impact": 6.2},
+						{"key": "v8", "name": "GNSS_Signal_Spoofing", "prob": 0.6, "impact": 6.0},
+						{"key": "v9", "name": "Camera_Blinding", "prob": 0.59, "impact": 5.9},
+						{"key": "v10", "name": "Point_Cloud_Attack", "prob": 0.59, "impact": 5.8},
+						{"key": "v11", "name": "Radar_Spoofing", "prob": 0.59, "impact": 5.8},
+						{"key": "v12", "name": "Physical_Power_Activation", "prob": 0.59, "impact": 6.1}
+					],
+					"ECU": [
+						{
+							"key": "AP", "name": "Autonomous Processor", "ecutype": "diagserver", "bus": ["ETH", "GNSS"],
+							"components": [
+								{
+									"key": "AP_sensor", "os": "UbuntuRT", "connection": ["Camera", "Radar", "Lidar"], "safetyimpact": 3,
+									"services": [
+										{"name": "receive_input", "privilege": "user", "attacksurface": false }
+									]
+								},
+								{
+									"key": "AP_nav", "os": "UbuntuRT", "connection": ["NavSys"], "safetyimpact": 3,
+									"services": [{"name": "gnss_parser", "privilege": "user", "attacksurface": false }]
+								},
+								{
+									"key": "AP_control", "os": "UbuntuRT", "connection": ["VC"], "safetyimpact": 4,
+									"services": [
+										{"name": "send_cmd", "privilege": "root", "vuls": "v1"}
+									]
+								}
+							]
+						},
+						{
+							"key": "VC", "name": "Vehicle Controller", "ecutype": "gateway", "bus": ["ETH", "CCAN", "BCAN"],
+							"components": [
+								{
+									"key": "VC_rcv", "os": "QNX", "connection": ["AP_control", "WL_trans"], "safetyimpact": 3,
+									"services": [{ "name": "cmd_listener", "privilege": "root", "vuls": "v2" }]
+								},
+								{
+									"key": "VC_pass", "os": "QNX", "connection": ["Steer", "Drive", "Brake"], "safetyimpact": 4,
+									"services": [
+										{ "name": "steer_ctrl", "privilege": "root" },
+										{ "name": "drive_ctrl", "privilege": "root" },
+										{ "name": "brake_ctrl", "privilege": "root" }
+									]
+								},
+								{
+									"key": "VC_start", "os": "QNX", "connection": ["PowerDist", "BSA"], "safetyimpact": 2,
+									"services": [{"name": "power_start", "privilege": "root" }]
+								}
+							]
+						},
+						{
+							"key": "WL", "name": "Wire/Wireless Link", "ecutype": "gateway", "bus": "ETH",
+							"components": [
+								{
+									"key": "WL_reconn", "os": "LinuxRT", "connection": ["RC"], "safetyimpact": 3,
+									"services": [
+										{"name": "auth_handler", "privilege": "root", "vuls": "v4", "attacksurface": true }
+										{"name": "network_conn", "privilege": "root", "vuls": "v5", "attacksurface": true }
+									]
+								},
+								{
+									"key": "WL_trans", "os": "LinuxRT", "connection": ["VC", "RCWS"], "safetyimpact": 4,
+									"services": [
+										{"name": "vc_cmd_forward", "privilege": "root" },
+										{"name": "rcws_cmd_forward", "privilege": "root" }
+									]
+								}
+							]
+						},
+						{
+							"key": "RCWS", "name": "Weapon System", "ecutype": "diagserver", "bus": "ETH",
+							"components": [
+								{
+									"key": "RCWS_rcv", "os": "RCWS_RT", "connection": ["EO-IR", "RCWS_comm"], "safetyimpact": 3,
+									"services": [{"name": "eo_ir_input", "privilege": "user", "vuls": "v6", "attacksurface": true}]
+								},
+								{
+									"key": "RCWS_comm", "os": "RCWS_RT", "connection": ["Weapon", "EO-IR"], "safetyimpact": 4,
+									"services": [{"name": "fire_ctrl", "privilege": "root" }]
+								}
+							]
+						},
+						{
+							"key": "RC", "name": "Control Station", "ecutype": "diagclient", "bus": "Wireless",
+							"components": [
+								{
+									"key": "RC_auth", "os": "CS_OS", "connection": ["WL_reconn"], "safetyimpact": 2,
+									"services": [{ "name": "login_ui", "privilege": "user", "vuls": "v3", "attacksurface": true }]
+								}
+							]
+						},
+						{
+							"key": "Steer", "name": "Steering ECU", "ecutype": "normal", "bus": "CCAN",
+							"components": [
+								{
+									"key": "Steer_c", "os": "SteerOS", "connection": ["VC_pass"], "safetyimpact": 4,
+									"services": [{ "name": "steer_motor", "privilege": "root" }]
+								}
+							]
+						},
+						{
+							"key": "Drive", "name": "Drive ECU", "ecutype": "normal", "bus": "CCAN",
+							"components": [
+								{
+									"key": "Drive_c", "os": "DriveOS", "connection": ["VC_pass"], "safetyimpact": 4,
+									"services": [{"name": "drive_motor", "privilege": "root"}]
+								}
+							]
+						},
+						{
+							"key": "Brake", "name": "Brake ECU", "ecutype": "normal", "bus": "CCAN",
+							"components": [
+								{
+									"key": "Brake_c", "os": "BrakeOS", "connection": ["VC_pass"], "safetyimpact": 4,
+									"services": [{"name": "brake_actuator", "privilege": "root"}]
+								}
+							]
+						},
+						{
+							"key": "PowerDist", "name": "Power Dist ECU", "ecutype": "normal", "bus": "BCAN",
+							"components": [
+								{
+									"key": "PowerDist_c", "os": "PDOS", "connection": ["VC_start", "BSA"], "safetyimpact": 3,
+									"services": [{ "name": "power_ctrl", "vuls": "v12", "privilege": "root", "attacksurface": true }]
+								}
+							]
+						},
+						{
+							"key": "BSA", "name": "Battery Safety Actuator", "ecutype": "normal", "bus": "BCAN",
+							"components": [
+								{
+									"key": "BSA_c", "os": "BSAOS", "connection": ["PowerDist"], "safetyimpact": 3,
+									"services": [{ "name": "hv_enable", "privilege": "root" }]
+								}
+							]
+						},
+						{
+							"key": "Camera", "name": "Camera Sensor", "ecutype": "sensor", "bus": "ETH",
+							"components": [
+								{
+									"key": "Camera_c", "os": "SensorRT", "connection": ["AP_sensor"], "safetyimpact": 2,
+									"services": [{ "name": "camera_stream", "privilege": "user", "vuls": "v9", "attacksurface": true }]
+								}
+							]
+						},
+						{
+							"key": "Radar", "name": "Radar Sensor", "ecutype": "sensor", "bus": "ETH",
+							"components": [
+								{
+									"key": "Radar_c", "os": "SensorRT", "connection": ["AP_sensor"], "safetyimpact": 2,
+									"services": [{ "name": "radar_pulse", "privilege": "user", "vuls": "v11", "attacksurface": true }]
+								}
+							]
+						},
+						{
+							"key": "Lidar", "name": "LIDAR Sensor", "ecutype": "sensor", "bus": "ETH",
+							"components": [
+								{
+									"key": "Lidar_c", "os": "SensorRT", "connection": ["AP_sensor"], "safetyimpact": 2,
+									"services": [{ "name": "lidar_scan", "privilege": "user", "vuls": "v10", "attacksurface": true }]
+								}
+							]
+						},
+						{
+							"key": "NavSys", "name": "Navigation System", "ecutype": "sensor", "bus": "GNSS",
+							"components": [
+								{
+									"key": "NavSys_c", "os": "NavOS", "connection": ["AP_nav"], "safetyimpact": 3,
+									"services": [{ "name": "gnss_position", "privilege": "user", "vuls": "v8", "attacksurface": true }]
+								}
+							]
+						},
+						{
+							"key":"EO-IR","name":"EO/IR Sensor","ecutype":"sensor","bus":"ETH",
+							"components":[
+								{
+									"key":"EOIR_c","os":"EOIR_OS","connection":["RCWS_rcv","RCWS_comm"],"safetyimpact":3,
+									"services":[
+										{"name":"eo_ir_vision","privilege":"user","vuls":"v6","attacksurface":true},
+										{"name":"eo_ir_ctrl","privilege":"root","vuls":"v7","attacksurface":true}
+									]
+								}
+							]
+						}
+
+					]
+				}
+				}
+
+				</pre>
+			</div>
+
+
+			</br> </br> </br>
+			<h2>Scenario Data using for the analysis</h2>
+			<p>This JSON data has been prepared for use within the <a href="AttackModel.html">AVHARM Visualization and Analysis</a>. Simply copy the JSON data into the input field. The results will display on the page, while other calculation metrics can be viewed in the console box (F12).</p>
+			</br>
+			<div class="toggle-heading" onclick="toggleCodeField('casebmw')">1. Baseline Scenario</div>
+			<div class="code-field" id="casebmw">
+				<button class="copy-button" onclick="copyToClipboard('casebmw')">Copy Code</button>
+				<pre>
+					{
+					"Architecture":{
+						"nodeDataArray":[
+							{"key":"A","type":"special"},
+								
+							{"key":"AP-sensor","group":"AP","impact":4.93,"type":"component","attacksurface":false},				
+							{"key":"AP-nav","group":"AP","impact":4.93,"type":"component","attacksurface":false},
+							{"key":"AP-control","group":"AP","impact":4.93,"type":"component","attacksurface":false},
+							
+							{"key":"VC-rcv","group":"VC","impact":4.93,"type":"component","attacksurface":false},		
+							{"key":"VC-pass","group":"VC","impact":4.93,"type":"component","attacksurface":false},
+							{"key":"VC-start","group":"VC","impact":4.93,"type":"component","attacksurface":false},
+							
+							{"key":"RC-auth","group":"RC","impact":4.93,"type":"component","attacksurface":true},
+							
+							{"key":"WL-trans","group":"WL","impact":4.93,"type":"component","attacksurface":false},
+							{"key":"WL-reconn","group":"WL","impact":4.93,"type":"component","attacksurface":true},
+							
+							{"key":"RCWS-comm","group":"RCWS","impact":4.93,"type":"component","attacksurface":false},	
+							{"key":"RCWS-rcv","group":"RCWS","impact":4.93,"type":"component","attacksurface":false},
+							
+							{"key":"Camera","group":"sens_eth","impact":7,"type":"AccessNode","component":"Cam_p","attacksurface":true},
+							{"key":"Radar","group":"sens_eth","impact":7,"type":"AccessNode","component":"Rad_p","attacksurface":true},
+							{"key":"Lidar","group":"sens_eth","impact":7,"type":"AccessNode","component":"Lid_p","attacksurface":true},
+							{"key":"NavSys","group":"sens_eth","impact":7,"type":"AccessNode","component":"Nav_p","attacksurface":true},
+							
+							{"key":"Weapon","group":"weapon_eth","impact":4.93,"type":"AccessNode","component":"Weapon_f","attacksurface":false},
+							{"key":"EO-IR","group":"weapon_eth","impact":4.93,"type":"AccessNode","component":"OD_d","attacksurface":true},
+							
+							{"key":"PowerDist","group":"BCAN","impact":6,"type":"AccessNode","component":"PowerDist_c","attacksurface":true},
+							{"key":"BSA","group":"BCAN","impact":6,"type":"AccessNode","component":"BSA_c","attacksurface":false},
+							{"key":"PowerCon","group":"BCAN","impact":6,"type":"AccessNode","component":"PowerCon","attacksurface":false},
+							
+							{"key":"Steer","group":"CCAN","impact":6,"type":"AccessNode","component":"Steer_cc","attacksurface":false},
+							{"key":"Drive","group":"CCAN","impact":6,"type":"AccessNode","component":"Drive_cc","attacksurface":false},
+							{"key":"Brake","group":"CCAN","impact":6,"type":"AccessNode","component":"Brake_cc","attacksurface":false},
+							
+							{"key":"AP","isGroup":true,"type":"ECU"},
+							{"key":"WL","isGroup":true,"type":"ECU"},			
+							{"key":"RCWS","isGroup":true,"type":"ECU"},			
+							{"key":"VC","isGroup":true,"type":"ECU"},
+							{"key":"RC","isGroup":true,"type":"ECU"},
+							
+							{"key": "weapon_eth", "isGroup": true, "type": "CANBUS"},
+							{"key": "sens_eth", "isGroup": true, "type": "CANBUS"},
+							{"key": "CCAN", "isGroup": true, "type": "CANBUS"},
+							{"key": "BCAN", "isGroup": true, "type": "CANBUS"},
+							{"key": "GNSS", "isGroup": true, "type": "CANBUS"}
+						],
+						"linkDataArray":[
+							{"from":"Camera","to":"AP-sensor","connecttype":"network"},
+							{"from":"NavSys","to":"AP-nav","connecttype":"network"},	
+							{"from":"Lidar","to":"AP-sensor","connecttype":"network"},
+							{"from":"Radar","to":"AP-sensor","connecttype":"network"},				
+							{"from":"AP-sensor","to":"AP-control","connecttype":"network"},
+							{"from":"AP-nav","to":"AP-control","connecttype":"network"},
+							
+							{"from":"AP-control","to":"VC-rcv","connecttype":"network"},
+							{"from":"VC-rcv","to":"VC-pass","connecttype":"network"},
+							{"from":"VC-pass","to":"Steer","connecttype":"CAN"},
+							{"from":"VC-pass","to":"Brake","connecttype":"CAN"},
+							{"from":"VC-pass","to":"Drive","connecttype":"CAN"},
+							
+							{"from":"PowerDist","to":"BSA","connecttype":"network"},
+							{"from":"BSA","to":"VC-start","connecttype":"network"},
+							{"from":"VC-start","to":"VC-pass","connecttype":"network"},
+							
+							{"from":"EO-IR","to":"RCWS-rcv","connecttype":"network"},
+							{"from":"RCWS-rcv","to":"RCWS-comm","connecttype":"network"},
+							{"from":"RCWS-comm","to":"Weapon","connecttype":"CAN"},
+							{"from":"RCWS-comm","to":"EO-IR","connecttype":"CAN"},
+							
+							{"from":"RC-auth","to":"WL-reconn","connecttype":"network"},	
+							
+							{"from":"WL-reconn","to":"WL-trans","connecttype":"network"},						
+							{"from":"WL-trans","to":"RCWS-comm","connecttype":"network"},
+							{"from":"WL-trans","to":"VC-rcv","connecttype":"network"}		
+						]
+					},
+					"Vulnerability":[
+						{"key":"AP-sensor","figure":"None","type":"root"},
+						{"key":"AP-sensor-a","parent":"AP-sensor","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from wrong sensors information"},
+						
+						{"key":"AP-nav","figure":"None","type":"root"},
+						{"key":"AP-nav-a","parent":"AP-nav","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from wrong navigation information"},
+						
+						{"key":"AP-control","figure":"OrGate","type":"root"},
+						{"key":"AP-control_a", "parent":"AP-control","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from wrong sensors information"},
+						{"key":"v1", "name": "CVE-2019-11815", "parent":"AP-control","figure":"None","prob":0.59,"type":"vulnerability", "description": "Vulnerability that allow attacker crafted data stream to escalate to root."},
+						
+						{"key":"VC-rcv","figure":"OrGate","type":"root"},
+						{"key":"VC-rcv-a","parent":"VC-rcv","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from wrong sensors information"},
+						{"key":"v2", "name": "CVE-2023-48691", "parent":"VC-rcv","figure":"None","prob":0.59,"type":"vulnerability", "description": "Vulnerability that allow attacker remote code execution with no authentication, no user interaction, and through network access only"},
+						
+						{"key":"VC-pass","figure":"None","type":"root"},
+						{"key":"VC-pass-a","parent":"VC-pass","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from VC-rcv"},
+						
+						{"key":"VC-start","figure":"None","type":"root"},
+						{"key":"VC-start-a","parent":"VC-start","figure":"None","prob":0.59,"type":"vulnerability", "description": "Accessible from BCAN"},
+						
+						{"key":"RC-auth","figure":"None","type":"root"},
+						{"key":"v3", "name": "CVE-2021-3156", "parent":"RC-auth","figure":"None","prob":0.59,"type":"vulnerability allows attacker to escalate from user to root with physical access"},
+						
+						{"key":"WL-reconn","figure":"AndGate","type":"root"},
+						{"key":"v4","name":"CVE-2018-9311","parent":"WL-reconn","figure":"None","prob":1,"type":"vulnerability", "description": "Rougue ground station"},
+						{"key":"v5","name":"CVE-2018-9318","parent":"WL-reconn","figure":"None","prob":1,"type":"vulnerability", "description": "Rougue ground station"},
+						
+						{"key":"WL-trans","figure":"None","type":"root"},
+						{"key":"WL-trans-a","parent":"WL-trans","figure":"None","prob":0.59,"type":"accessible", "description": "Accessible from WL-reconn"},		
+						
+						{"key":"RCWS-rcv","figure":"None","type":"root"},
+						{"key":"RCWS-rcv-a","parent":"RCWS-rcv","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from EO-IR"},		
+						{"key":"RCWS-comm","figure":"None","type":"root"},
+						{"key":"RCWS-comm-a","parent":"RCWS-comm","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from WL-trans"},
+						
+						{"key":"Weapon","figure":"None","type":"root"},
+						{"key":"Weapon_a","parent":"Weapon","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from RCWS-comm"},		
+						
+						{"key":"EO-IR","figure":"OrGate","type":"root"},
+						{"key":"v6", "name": "IR_false_obj","parent":"EO-IR","figure":"None","prob":0.59,"type":"vulnerability", "description": "Use of IR heat sources or reflective materials to create false objects or hide real ones in thermal imagery"},
+						{"key":"v7", "name": "CVE-2022-37061", "parent":"EO-IR","figure":"None","prob":0.59,"type":"vulnerability", "description": " The attacker exploit CVE-2022-37061 to execute commands as root."},
+						
+						{"key":"Camera","figure":"None","type":"root"},
+						{"key":"v9", "name": "Camera_bliding", "parent":"Camera","figure":"None","prob":0.59,"type":"accessable", "description": "Light overload causes failure to detect real objects"},		
+						
+						{"key":"Lidar","figure":"None","type":"root"},
+						{"key":"v10", "name": "Point_cloud_attack", "parent":"Lidar","figure":"None","prob":0.59,"type":"accessable", "description": "Patterned projections fool object detection algorithms"},	
+						
+						{"key":"Radar","figure":"None","type":"root"},
+						{"key":"v11", "name": "Radar_spoofing", "parent":"Radar","figure":"None","prob":0.59,"type":"accessable", "description": "False echoes injected into radar for phantom obstacles"},	
+						
+						{"key":"NavSys","figure":"None","type":"root"},
+						{"key": "v8", "name": "GNSS_Signal_Spoofing", "parent":"NavSys","figure":"None", "prob": 0.6, "type": "vulnerability","description": "The attacker deploys GNSS spoofers to transmit falsified satellite signals."},		
+						
+						{"key":"PowerDist","figure":"None","type":"root"},
+						{"key":"v12","name": "physical_access", "parent":"PowerDist","figure":"None","prob":0.59,"type":"accessable","description": "The attacker physical access and turn on the UGV."},		
+						{"key":"BSA","figure":"None","type":"root"},
+						{"key":"BSA_a","parent":"BSA","figure":"None","prob":0.59,"type":"accessable"},		
+								
+						{"key":"Steer","figure":"None","type":"root"},
+						{"key":"Steer_a","parent":"Steer","figure":"None","prob":0.59,"type":"accessable"},
+						{"key":"Brake","figure":"None","type":"root"},
+						{"key":"Brake_a","parent":"Brake","figure":"None","prob":0.59,"type":"accessable"},
+						{"key":"Drive","figure":"None","type":"root"},
+						{"key":"Drive_a","parent":"Drive","figure":"None","prob":0.59,"type":"accessable"}
+						
+						
+					]
+				}
+			
+				</pre>
+		</div>
+	    	
+				
+    <script>
+        function toggleCodeField(id) {
+            var codeField = document.getElementById(id);
+            if (codeField.style.display === "none" || codeField.style.display === "") {
+                codeField.style.display = "block";
+            } else {
+                codeField.style.display = "none";
+            }
+        }
+
+        function copyToClipboard(id) {
+            var codeField = document.getElementById(id).getElementsByTagName('pre')[0];
+            var textArea = document.createElement("textarea");
+            textArea.value = codeField.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("Copy");
+            textArea.remove();
+        }
+    </script>
+    </main>
+</body>
+</html>

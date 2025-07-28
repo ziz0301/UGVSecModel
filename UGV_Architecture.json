@@ -1,0 +1,204 @@
+{
+"IVN": {
+	"BUS": [
+		{"key": "ETH", "name": "Ethernet", "protocol": "Ethernet" },
+		{"key": "CCAN", "name": "Chassis_CAN", "protocol": "CAN" },
+		{"key": "BCAN", "name": "Body_CAN", "protocol": "CAN" },
+		{"key": "Wireless", "name": "MilitaryDefined", "protocol": "Cellular" },
+		{"key": "GNSS", "name": "GNSS Bus", "protocol": "Satellite" }
+	],
+	"VUL": [
+		{"key": "v1", "name": "CVE-2019-11815", "prob": 0.59, "impact": 6.0},
+		{"key": "v2", "name": "CVE-2023-48691", "prob": 0.59, "impact": 6.0},
+		{"key": "v3", "name": "CVE-2021-3156", "prob": 0.59, "impact": 5.7},
+		{"key": "v4", "name": "CVE-2018-9311", "prob": 1.0, "impact": 6.1},
+		{"key": "v5", "name": "CVE-2018-9318", "prob": 1.0, "impact": 6.2},
+		{"key": "v6", "name": "EO-IR IR Manipulation", "prob": 0.59, "impact": 6.5},
+		{"key": "v7", "name": "CVE-2022-37061", "prob": 0.59, "impact": 6.2},
+		{"key": "v8", "name": "GNSS_Signal_Spoofing", "prob": 0.6, "impact": 6.0},
+		{"key": "v9", "name": "Camera_Blinding", "prob": 0.59, "impact": 5.9},
+		{"key": "v10", "name": "Point_Cloud_Attack", "prob": 0.59, "impact": 5.8},
+		{"key": "v11", "name": "Radar_Spoofing", "prob": 0.59, "impact": 5.8},
+		{"key": "v12", "name": "Physical_Power_Activation", "prob": 0.59, "impact": 6.1}
+	],
+	"ECU": [
+		{
+			"key": "AP", "name": "Autonomous Processor", "ecutype": "diagserver", "bus": ["ETH", "GNSS"],
+			"components": [
+				{
+					"key": "AP_sensor", "os": "UbuntuRT", "connection": ["Camera", "Radar", "Lidar"], "safetyimpact": 3,
+					"services": [
+						{"name": "receive_input", "privilege": "user", "attacksurface": false }
+					]
+				},
+				{
+					"key": "AP_nav", "os": "UbuntuRT", "connection": ["NavSys"], "safetyimpact": 3,
+					"services": [{"name": "gnss_parser", "privilege": "user", "attacksurface": false }]
+				},
+				{
+					"key": "AP_control", "os": "UbuntuRT", "connection": ["VC"], "safetyimpact": 4,
+					"services": [
+						{"name": "send_cmd", "privilege": "root", "vuls": "v1"}
+					]
+				}
+			]
+		},
+		{
+			"key": "VC", "name": "Vehicle Controller", "ecutype": "gateway", "bus": ["ETH", "CCAN", "BCAN"],
+			"components": [
+				{
+					"key": "VC_rcv", "os": "QNX", "connection": ["AP_control", "WL_trans"], "safetyimpact": 3,
+					"services": [{ "name": "cmd_listener", "privilege": "root", "vuls": "v2" }]
+				},
+				{
+					"key": "VC_pass", "os": "QNX", "connection": ["Steer", "Drive", "Brake"], "safetyimpact": 4,
+					"services": [
+						{ "name": "steer_ctrl", "privilege": "root" },
+						{ "name": "drive_ctrl", "privilege": "root" },
+						{ "name": "brake_ctrl", "privilege": "root" }
+					]
+				},
+				{
+					"key": "VC_start", "os": "QNX", "connection": ["PowerDist", "BSA"], "safetyimpact": 2,
+					"services": [{"name": "power_start", "privilege": "root" }]
+				}
+			]
+		},
+		{
+			"key": "WL", "name": "Wire/Wireless Link", "ecutype": "gateway", "bus": "ETH",
+			"components": [
+				{
+					"key": "WL_reconn", "os": "LinuxRT", "connection": ["RC"], "safetyimpact": 3,
+					"services": [
+						{"name": "auth_handler", "privilege": "root", "vuls": "v4", "attacksurface": true }
+						{"name": "network_conn", "privilege": "root", "vuls": "v5", "attacksurface": true }
+					]
+				},
+				{
+					"key": "WL_trans", "os": "LinuxRT", "connection": ["VC", "RCWS"], "safetyimpact": 4,
+					"services": [
+						{"name": "vc_cmd_forward", "privilege": "root" },
+						{"name": "rcws_cmd_forward", "privilege": "root" }
+					]
+				}
+			]
+		},
+		{
+			"key": "RCWS", "name": "Weapon System", "ecutype": "diagserver", "bus": "ETH",
+			"components": [
+				{
+					"key": "RCWS_rcv", "os": "RCWS_RT", "connection": ["EO-IR", "RCWS_comm"], "safetyimpact": 3,
+					"services": [{"name": "eo_ir_input", "privilege": "user", "vuls": "v6", "attacksurface": true}]
+				},
+				{
+					"key": "RCWS_comm", "os": "RCWS_RT", "connection": ["Weapon", "EO-IR"], "safetyimpact": 4,
+					"services": [{"name": "fire_ctrl", "privilege": "root" }]
+				}
+			]
+		},
+		{
+			"key": "RC", "name": "Control Station", "ecutype": "diagclient", "bus": "Wireless",
+			"components": [
+				{
+					"key": "RC_auth", "os": "CS_OS", "connection": ["WL_reconn"], "safetyimpact": 2,
+					"services": [{ "name": "login_ui", "privilege": "user", "vuls": "v3", "attacksurface": true }]
+				}
+			]
+		},
+		{
+			"key": "Steer", "name": "Steering ECU", "ecutype": "normal", "bus": "CCAN",
+			"components": [
+				{
+					"key": "Steer_c", "os": "SteerOS", "connection": ["VC_pass"], "safetyimpact": 4,
+					"services": [{ "name": "steer_motor", "privilege": "root" }]
+				}
+			]
+		},
+		{
+			"key": "Drive", "name": "Drive ECU", "ecutype": "normal", "bus": "CCAN",
+			"components": [
+				{
+					"key": "Drive_c", "os": "DriveOS", "connection": ["VC_pass"], "safetyimpact": 4,
+					"services": [{"name": "drive_motor", "privilege": "root"}]
+				}
+			]
+		},
+		{
+			"key": "Brake", "name": "Brake ECU", "ecutype": "normal", "bus": "CCAN",
+			"components": [
+				{
+					"key": "Brake_c", "os": "BrakeOS", "connection": ["VC_pass"], "safetyimpact": 4,
+					"services": [{"name": "brake_actuator", "privilege": "root"}]
+				}
+			]
+		},
+		{
+			"key": "PowerDist", "name": "Power Dist ECU", "ecutype": "normal", "bus": "BCAN",
+			"components": [
+				{
+					"key": "PowerDist_c", "os": "PDOS", "connection": ["VC_start", "BSA"], "safetyimpact": 3,
+					"services": [{ "name": "power_ctrl", "vuls": "v12", "privilege": "root", "attacksurface": true }]
+				}
+			]
+		},
+		{
+			"key": "BSA", "name": "Battery Safety Actuator", "ecutype": "normal", "bus": "BCAN",
+			"components": [
+				{
+					"key": "BSA_c", "os": "BSAOS", "connection": ["PowerDist"], "safetyimpact": 3,
+					"services": [{ "name": "hv_enable", "privilege": "root" }]
+				}
+			]
+		},
+		{
+			"key": "Camera", "name": "Camera Sensor", "ecutype": "sensor", "bus": "ETH",
+			"components": [
+				{
+					"key": "Camera_c", "os": "SensorRT", "connection": ["AP_sensor"], "safetyimpact": 2,
+					"services": [{ "name": "camera_stream", "privilege": "user", "vuls": "v9", "attacksurface": true }]
+				}
+			]
+		},
+		{
+			"key": "Radar", "name": "Radar Sensor", "ecutype": "sensor", "bus": "ETH",
+			"components": [
+				{
+					"key": "Radar_c", "os": "SensorRT", "connection": ["AP_sensor"], "safetyimpact": 2,
+					"services": [{ "name": "radar_pulse", "privilege": "user", "vuls": "v11", "attacksurface": true }]
+				}
+			]
+		},
+		{
+			"key": "Lidar", "name": "LIDAR Sensor", "ecutype": "sensor", "bus": "ETH",
+			"components": [
+				{
+					"key": "Lidar_c", "os": "SensorRT", "connection": ["AP_sensor"], "safetyimpact": 2,
+					"services": [{ "name": "lidar_scan", "privilege": "user", "vuls": "v10", "attacksurface": true }]
+				}
+			]
+		},
+		{
+			"key": "NavSys", "name": "Navigation System", "ecutype": "sensor", "bus": "GNSS",
+			"components": [
+				{
+					"key": "NavSys_c", "os": "NavOS", "connection": ["AP_nav"], "safetyimpact": 3,
+					"services": [{ "name": "gnss_position", "privilege": "user", "vuls": "v8", "attacksurface": true }]
+				}
+			]
+		},
+		{
+			"key":"EO-IR","name":"EO/IR Sensor","ecutype":"sensor","bus":"ETH",
+			"components":[
+				{
+					"key":"EOIR_c","os":"EOIR_OS","connection":["RCWS_rcv","RCWS_comm"],"safetyimpact":3,
+					"services":[
+						{"name":"eo_ir_vision","privilege":"user","vuls":"v6","attacksurface":true},
+						{"name":"eo_ir_ctrl","privilege":"root","vuls":"v7","attacksurface":true}
+					]
+				}
+			]
+		}
+
+	]
+}
+}
