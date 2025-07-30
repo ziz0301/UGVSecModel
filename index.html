@@ -58,10 +58,10 @@
 				<li><strong>Wire/Wireless Link (WL)</strong>
 					<ul>
 					  <li><strong>WL_recon</strong>: Receives commands from the external control station.</li>
-					  <li><strong>WL_trans</strong>: Forwards commands to vehicle or weapon systems.</li>
+					  <li><strong>WL_trans</strong>: Forwards commands to vehicle or Payload systems.</li>
 					</ul>
 				</li>
-				<li><strong>Remote-Controlled Weapon System (RCWS)</strong>
+				<li><strong>Remote-Controlled Payload System (RCPS)</strong>
 					<ul>
 						<li><strong>RCWS_comm</strong>: Communicates with WL for commands.</li>
 						<li><strong>RCWS_rcv</strong>: Receives targeting data from EO/IR.</li>
@@ -91,9 +91,9 @@
 				<li><strong>BSA</strong>: Battery Safety Actuator</li>
 			</ul>
 
-			<h4>Connected to Remote-Controlled Weapon System (RCWS):</h4>
+			<h4>Connected to Remote-Controlled Payload System (RCWS):</h4>
 			<ul>
-				<li><strong>Weapon ECU</strong>: via Ethernet</li>
+				<li><strong>Payload ECU</strong>: via Ethernet</li>
 				<li><strong>EO-IR</strong>: via Ethernet</li>
 			</ul>
 		</div>
@@ -191,14 +191,14 @@
 							]
 						},
 						{
-							"key": "RCWS", "name": "Weapon System", "ecutype": "diagserver", "bus": "ETH",
+							"key": "RCWS", "name": "Payload System", "ecutype": "diagserver", "bus": "ETH",
 							"components": [
 								{
 									"key": "RCWS_rcv", "os": "RCWS_RT", "connection": ["EO-IR", "RCWS_comm"], "safetyimpact": 3,
 									"services": [{"name": "eo_ir_input", "privilege": "user", "vuls": "v6", "attacksurface": true}]
 								},
 								{
-									"key": "RCWS_comm", "os": "RCWS_RT", "connection": ["Weapon", "EO-IR"], "safetyimpact": 4,
+									"key": "RCWS_comm", "os": "RCWS_RT", "connection": ["Payload", "EO-IR"], "safetyimpact": 4,
 									"services": [{"name": "fire_ctrl", "privilege": "root" }]
 								}
 							]
@@ -348,8 +348,8 @@
 							{"key":"Lidar","group":"sens_eth","impact":7,"type":"AccessNode","component":"Lid_p","attacksurface":true},
 							{"key":"NavSys","group":"sens_eth","impact":7,"type":"AccessNode","component":"Nav_p","attacksurface":true},
 							
-							{"key":"Weapon","group":"weapon_eth","impact":4.93,"type":"AccessNode","component":"Weapon_f","attacksurface":false},
-							{"key":"EO-IR","group":"weapon_eth","impact":4.93,"type":"AccessNode","component":"OD_d","attacksurface":true},
+							{"key":"Payload","group":"payload_eth","impact":4.93,"type":"AccessNode","component":"Payload_f","attacksurface":false},
+							{"key":"EO-IR","group":"payload_eth","impact":4.93,"type":"AccessNode","component":"OD_d","attacksurface":true},
 							
 							{"key":"PowerDist","group":"BCAN","impact":6,"type":"AccessNode","component":"PowerDist_c","attacksurface":true},
 							{"key":"BSA","group":"BCAN","impact":6,"type":"AccessNode","component":"BSA_c","attacksurface":false},
@@ -365,7 +365,7 @@
 							{"key":"VC","isGroup":true,"type":"ECU"},
 							{"key":"RC","isGroup":true,"type":"ECU"},
 							
-							{"key": "weapon_eth", "isGroup": true, "type": "CANBUS"},
+							{"key": "payload_eth", "isGroup": true, "type": "CANBUS"},
 							{"key": "sens_eth", "isGroup": true, "type": "CANBUS"},
 							{"key": "CCAN", "isGroup": true, "type": "CANBUS"},
 							{"key": "BCAN", "isGroup": true, "type": "CANBUS"},
@@ -391,7 +391,7 @@
 							
 							{"from":"EO-IR","to":"RCWS-rcv","connecttype":"network"},
 							{"from":"RCWS-rcv","to":"RCWS-comm","connecttype":"network"},
-							{"from":"RCWS-comm","to":"Weapon","connecttype":"CAN"},
+							{"from":"RCWS-comm","to":"Payload","connecttype":"CAN"},
 							{"from":"RCWS-comm","to":"EO-IR","connecttype":"CAN"},
 							
 							{"from":"RC-auth","to":"WL-reconn","connecttype":"network"},	
@@ -437,8 +437,8 @@
 						{"key":"RCWS-comm","figure":"None","type":"root"},
 						{"key":"RCWS-comm-a","parent":"RCWS-comm","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from WL-trans"},
 						
-						{"key":"Weapon","figure":"None","type":"root"},
-						{"key":"Weapon_a","parent":"Weapon","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from RCWS-comm"},		
+						{"key":"Payload","figure":"None","type":"root"},
+						{"key":"Payload_a","parent":"Payload","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from RCWS-comm"},		
 						
 						{"key":"EO-IR","figure":"OrGate","type":"root"},
 						{"key":"v6", "name": "IR_false_obj","parent":"EO-IR","figure":"None","prob":0.59,"type":"vulnerability", "description": "Use of IR heat sources or reflective materials to create false objects or hide real ones in thermal imagery"},
