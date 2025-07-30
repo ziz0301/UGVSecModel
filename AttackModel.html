@@ -51,8 +51,8 @@
 						{"key":"Lidar","group":"sens_eth","impact":7,"type":"AccessNode","component":"Lid_p","attacksurface":true},
 						{"key":"NavSys","group":"sens_eth","impact":7,"type":"AccessNode","component":"Nav_p","attacksurface":true},
 						
-						{"key":"Weapon","group":"weapon_eth","impact":4.93,"type":"AccessNode","component":"Weapon_f","attacksurface":false},
-						{"key":"EO-IR","group":"weapon_eth","impact":4.93,"type":"AccessNode","component":"OD_d","attacksurface":true},
+						{"key":"Payload","group":"payload_eth","impact":4.93,"type":"AccessNode","component":"Payload_f","attacksurface":false},
+						{"key":"EO-IR","group":"payload_eth","impact":4.93,"type":"AccessNode","component":"OD_d","attacksurface":true},
 						
 						{"key":"PowerDist","group":"BCAN","impact":6,"type":"AccessNode","component":"PowerDist_c","attacksurface":true},
 						{"key":"BSA","group":"BCAN","impact":6,"type":"AccessNode","component":"BSA_c","attacksurface":false},
@@ -68,7 +68,7 @@
 						{"key":"VC","isGroup":true,"type":"ECU"},
 						{"key":"RC","isGroup":true,"type":"ECU"},
 						
-						{"key": "weapon_eth", "isGroup": true, "type": "CANBUS"},
+						{"key": "payload_eth", "isGroup": true, "type": "CANBUS"},
 						{"key": "sens_eth", "isGroup": true, "type": "CANBUS"},
 						{"key": "CCAN", "isGroup": true, "type": "CANBUS"},
 						{"key": "BCAN", "isGroup": true, "type": "CANBUS"},
@@ -94,7 +94,7 @@
 						
 						{"from":"EO-IR","to":"RCWS-rcv","connecttype":"network"},
 						{"from":"RCWS-rcv","to":"RCWS-comm","connecttype":"network"},
-						{"from":"RCWS-comm","to":"Weapon","connecttype":"CAN"},
+						{"from":"RCWS-comm","to":"Payload","connecttype":"CAN"},
 						{"from":"RCWS-comm","to":"EO-IR","connecttype":"CAN"},
 						
 						{"from":"RC-auth","to":"WL-reconn","connecttype":"network"},	
@@ -140,8 +140,8 @@
 					{"key":"RCWS-comm","figure":"None","type":"root"},
 					{"key":"RCWS-comm-a","parent":"RCWS-comm","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from WL-trans"},
 					
-					{"key":"Weapon","figure":"None","type":"root"},
-					{"key":"Weapon_a","parent":"Weapon","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from RCWS-comm"},		
+					{"key":"Payload","figure":"None","type":"root"},
+					{"key":"Payload_a","parent":"Payload","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from RCWS-comm"},		
 					
 					{"key":"EO-IR","figure":"OrGate","type":"root"},
 					{"key":"v6", "name": "IR_false_obj","parent":"EO-IR","figure":"None","prob":0.59,"type":"vulnerability", "description": "Use of IR heat sources or reflective materials to create false objects or hide real ones in thermal imagery"},
