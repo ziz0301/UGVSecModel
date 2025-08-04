@@ -58,13 +58,13 @@
 				<li><strong>Wire/Wireless Link (WL)</strong>
 					<ul>
 					  <li><strong>WL_recon</strong>: Receives commands from the external control station.</li>
-					  <li><strong>WL_trans</strong>: Forwards commands to vehicle or Payload systems.</li>
+					  <li><strong>WL_trans</strong>: Forwards commands to vehicle or payload systems.</li>
 					</ul>
 				</li>
-				<li><strong>Remote-Controlled Payload System (RCPS)</strong>
+				<li><strong>Payload Module (PM)</strong>
 					<ul>
-						<li><strong>RCWS_comm</strong>: Communicates with WL for commands.</li>
-						<li><strong>RCWS_rcv</strong>: Receives targeting data from EO/IR.</li>
+						<li><strong>PM_comm</strong>: Communicates with WL for commands.</li>
+						<li><strong>PM_rcv</strong>: Receives targeting data from EO/IR.</li>
 					</ul>
 				</li>
 				<li><strong>Control Station (CS)</strong>
@@ -91,9 +91,9 @@
 				<li><strong>BSA</strong>: Battery Safety Actuator</li>
 			</ul>
 
-			<h4>Connected to Remote-Controlled Payload System (RCWS):</h4>
+			<h4>Connected to Remote-Controlled Payload Module (PM):</h4>
 			<ul>
-				<li><strong>Payload ECU</strong>: via Ethernet</li>
+				<li><strong>Payload</strong>: via Ethernet</li>
 				<li><strong>EO-IR</strong>: via Ethernet</li>
 			</ul>
 		</div>
@@ -182,24 +182,24 @@
 									]
 								},
 								{
-									"key": "WL_trans", "os": "LinuxRT", "connection": ["VC", "RCWS"], "safetyimpact": 4,
+									"key": "WL_trans", "os": "LinuxRT", "connection": ["VC", "PM"], "safetyimpact": 4,
 									"services": [
 										{"name": "vc_cmd_forward", "privilege": "root" },
-										{"name": "rcws_cmd_forward", "privilege": "root" }
+										{"name": "pm_cmd_forward", "privilege": "root" }
 									]
 								}
 							]
 						},
 						{
-							"key": "RCWS", "name": "Payload System", "ecutype": "diagserver", "bus": "ETH",
+							"key": "PM", "name": "Payload Module", "ecutype": "diagserver", "bus": "ETH",
 							"components": [
 								{
-									"key": "RCWS_rcv", "os": "RCWS_RT", "connection": ["EO-IR", "RCWS_comm"], "safetyimpact": 3,
+									"key": "PM_rcv", "os": "PM_RT", "connection": ["EO-IR", "PM_comm"], "safetyimpact": 3,
 									"services": [{"name": "eo_ir_input", "privilege": "user", "vuls": "v6", "attacksurface": true}]
 								},
 								{
-									"key": "RCWS_comm", "os": "RCWS_RT", "connection": ["Payload", "EO-IR"], "safetyimpact": 4,
-									"services": [{"name": "fire_ctrl", "privilege": "root" }]
+									"key": "PM_comm", "os": "PM_RT", "connection": ["Payload", "EO-IR"], "safetyimpact": 4,
+									"services": [{"name": "load_ctrl", "privilege": "root" }]
 								}
 							]
 						},
@@ -297,7 +297,7 @@
 							"key":"EO-IR","name":"EO/IR Sensor","ecutype":"sensor","bus":"ETH",
 							"components":[
 								{
-									"key":"EOIR_c","os":"EOIR_OS","connection":["RCWS_rcv","RCWS_comm"],"safetyimpact":3,
+									"key":"EOIR_c","os":"EOIR_OS","connection":["PM_rcv","PMs_comm"],"safetyimpact":3,
 									"services":[
 										{"name":"eo_ir_vision","privilege":"user","vuls":"v6","attacksurface":true},
 										{"name":"eo_ir_ctrl","privilege":"root","vuls":"v7","attacksurface":true}
@@ -340,15 +340,15 @@
 							{"key":"WL-trans","group":"WL","impact":4.93,"type":"component","attacksurface":false},
 							{"key":"WL-reconn","group":"WL","impact":4.93,"type":"component","attacksurface":true},
 							
-							{"key":"RCWS-comm","group":"RCWS","impact":4.93,"type":"component","attacksurface":false},	
-							{"key":"RCWS-rcv","group":"RCWS","impact":4.93,"type":"component","attacksurface":false},
+							{"key":"PM-comm","group":"PM","impact":4.93,"type":"component","attacksurface":false},	
+							{"key":"PM-rcv","group":"PM","impact":4.93,"type":"component","attacksurface":false},
 							
 							{"key":"Camera","group":"sens_eth","impact":7,"type":"AccessNode","component":"Cam_p","attacksurface":true},
 							{"key":"Radar","group":"sens_eth","impact":7,"type":"AccessNode","component":"Rad_p","attacksurface":true},
 							{"key":"Lidar","group":"sens_eth","impact":7,"type":"AccessNode","component":"Lid_p","attacksurface":true},
 							{"key":"NavSys","group":"sens_eth","impact":7,"type":"AccessNode","component":"Nav_p","attacksurface":true},
 							
-							{"key":"Payload","group":"payload_eth","impact":4.93,"type":"AccessNode","component":"Payload_f","attacksurface":false},
+							{"key":"Payload","group":payload_eth","impact":4.93,"type":"AccessNode","component":"Weapon_f","attacksurface":false},
 							{"key":"EO-IR","group":"payload_eth","impact":4.93,"type":"AccessNode","component":"OD_d","attacksurface":true},
 							
 							{"key":"PowerDist","group":"BCAN","impact":6,"type":"AccessNode","component":"PowerDist_c","attacksurface":true},
@@ -361,7 +361,7 @@
 							
 							{"key":"AP","isGroup":true,"type":"ECU"},
 							{"key":"WL","isGroup":true,"type":"ECU"},			
-							{"key":"RCWS","isGroup":true,"type":"ECU"},			
+							{"key":"PM","isGroup":true,"type":"ECU"},			
 							{"key":"VC","isGroup":true,"type":"ECU"},
 							{"key":"RC","isGroup":true,"type":"ECU"},
 							
@@ -389,15 +389,15 @@
 							{"from":"BSA","to":"VC-start","connecttype":"network"},
 							{"from":"VC-start","to":"VC-pass","connecttype":"network"},
 							
-							{"from":"EO-IR","to":"RCWS-rcv","connecttype":"network"},
-							{"from":"RCWS-rcv","to":"RCWS-comm","connecttype":"network"},
-							{"from":"RCWS-comm","to":"Payload","connecttype":"CAN"},
-							{"from":"RCWS-comm","to":"EO-IR","connecttype":"CAN"},
+							{"from":"EO-IR","to":"PM-rcv","connecttype":"network"},
+							{"from":"PM-rcv","to":"PM-comm","connecttype":"network"},
+							{"from":"PM-comm","to":"Payload","connecttype":"CAN"},
+							{"from":"PM-comm","to":"EO-IR","connecttype":"CAN"},
 							
 							{"from":"RC-auth","to":"WL-reconn","connecttype":"network"},	
 							
 							{"from":"WL-reconn","to":"WL-trans","connecttype":"network"},						
-							{"from":"WL-trans","to":"RCWS-comm","connecttype":"network"},
+							{"from":"WL-trans","to":"PM-comm","connecttype":"network"},
 							{"from":"WL-trans","to":"VC-rcv","connecttype":"network"}		
 						]
 					},
@@ -432,13 +432,13 @@
 						{"key":"WL-trans","figure":"None","type":"root"},
 						{"key":"WL-trans-a","parent":"WL-trans","figure":"None","prob":0.59,"type":"accessible", "description": "Accessible from WL-reconn"},		
 						
-						{"key":"RCWS-rcv","figure":"None","type":"root"},
-						{"key":"RCWS-rcv-a","parent":"RCWS-rcv","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from EO-IR"},		
-						{"key":"RCWS-comm","figure":"None","type":"root"},
-						{"key":"RCWS-comm-a","parent":"RCWS-comm","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from WL-trans"},
+						{"key":"PM-rcv","figure":"None","type":"root"},
+						{"key":"PM-rcv-a","parent":"PM-rcv","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from EO-IR"},		
+						{"key":"PM-comm","figure":"None","type":"root"},
+						{"key":"PM-comm-a","parent":"PM-comm","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from WL-trans"},
 						
 						{"key":"Payload","figure":"None","type":"root"},
-						{"key":"Payload_a","parent":"Payload","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from RCWS-comm"},		
+						{"key":"Payload_a","parent":"Payload","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from PM-comm"},		
 						
 						{"key":"EO-IR","figure":"OrGate","type":"root"},
 						{"key":"v6", "name": "IR_false_obj","parent":"EO-IR","figure":"None","prob":0.59,"type":"vulnerability", "description": "Use of IR heat sources or reflective materials to create false objects or hide real ones in thermal imagery"},
