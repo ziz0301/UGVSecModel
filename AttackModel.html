@@ -25,155 +25,155 @@
                <div>
                  <p class="font-weight-bold">JSON Data Input</p>
                  <textarea id="myJsonData" style="width:100%;height:210px">
-			 {
-				"Architecture":{
-					"nodeDataArray":[
-						{"key":"A","type":"special"},
-							
-						{"key":"AP-sensor","group":"AP","impact":4.93,"type":"component","attacksurface":false},				
-						{"key":"AP-nav","group":"AP","impact":4.93,"type":"component","attacksurface":false},
-						{"key":"AP-control","group":"AP","impact":4.93,"type":"component","attacksurface":false},
-						
-						{"key":"VC-rcv","group":"VC","impact":4.93,"type":"component","attacksurface":false},		
-						{"key":"VC-pass","group":"VC","impact":4.93,"type":"component","attacksurface":false},
-						{"key":"VC-start","group":"VC","impact":4.93,"type":"component","attacksurface":false},
-						
-						{"key":"RC-auth","group":"RC","impact":4.93,"type":"component","attacksurface":true},
-						
-						{"key":"WL-trans","group":"WL","impact":4.93,"type":"component","attacksurface":false},
-						{"key":"WL-reconn","group":"WL","impact":4.93,"type":"component","attacksurface":true},
-						
-						{"key":"RCWS-comm","group":"RCWS","impact":4.93,"type":"component","attacksurface":false},	
-						{"key":"RCWS-rcv","group":"RCWS","impact":4.93,"type":"component","attacksurface":false},
-						
-						{"key":"Camera","group":"sens_eth","impact":7,"type":"AccessNode","component":"Cam_p","attacksurface":true},
-						{"key":"Radar","group":"sens_eth","impact":7,"type":"AccessNode","component":"Rad_p","attacksurface":true},
-						{"key":"Lidar","group":"sens_eth","impact":7,"type":"AccessNode","component":"Lid_p","attacksurface":true},
-						{"key":"NavSys","group":"sens_eth","impact":7,"type":"AccessNode","component":"Nav_p","attacksurface":true},
-						
-						{"key":"Payload","group":"payload_eth","impact":4.93,"type":"AccessNode","component":"Payload_f","attacksurface":false},
-						{"key":"EO-IR","group":"payload_eth","impact":4.93,"type":"AccessNode","component":"OD_d","attacksurface":true},
-						
-						{"key":"PowerDist","group":"BCAN","impact":6,"type":"AccessNode","component":"PowerDist_c","attacksurface":true},
-						{"key":"BSA","group":"BCAN","impact":6,"type":"AccessNode","component":"BSA_c","attacksurface":false},
-						{"key":"PowerCon","group":"BCAN","impact":6,"type":"AccessNode","component":"PowerCon","attacksurface":false},
-						
-						{"key":"Steer","group":"CCAN","impact":6,"type":"AccessNode","component":"Steer_cc","attacksurface":false},
-						{"key":"Drive","group":"CCAN","impact":6,"type":"AccessNode","component":"Drive_cc","attacksurface":false},
-						{"key":"Brake","group":"CCAN","impact":6,"type":"AccessNode","component":"Brake_cc","attacksurface":false},
-						
-						{"key":"AP","isGroup":true,"type":"ECU"},
-						{"key":"WL","isGroup":true,"type":"ECU"},			
-						{"key":"RCWS","isGroup":true,"type":"ECU"},			
-						{"key":"VC","isGroup":true,"type":"ECU"},
-						{"key":"RC","isGroup":true,"type":"ECU"},
-						
-						{"key": "payload_eth", "isGroup": true, "type": "CANBUS"},
-						{"key": "sens_eth", "isGroup": true, "type": "CANBUS"},
-						{"key": "CCAN", "isGroup": true, "type": "CANBUS"},
-						{"key": "BCAN", "isGroup": true, "type": "CANBUS"},
-						{"key": "GNSS", "isGroup": true, "type": "CANBUS"}
-					],
-					"linkDataArray":[
-						{"from":"Camera","to":"AP-sensor","connecttype":"network"},
-						{"from":"NavSys","to":"AP-nav","connecttype":"network"},	
-						{"from":"Lidar","to":"AP-sensor","connecttype":"network"},
-						{"from":"Radar","to":"AP-sensor","connecttype":"network"},				
-						{"from":"AP-sensor","to":"AP-control","connecttype":"network"},
-						{"from":"AP-nav","to":"AP-control","connecttype":"network"},
-						
-						{"from":"AP-control","to":"VC-rcv","connecttype":"network"},
-						{"from":"VC-rcv","to":"VC-pass","connecttype":"network"},
-						{"from":"VC-pass","to":"Steer","connecttype":"CAN"},
-						{"from":"VC-pass","to":"Brake","connecttype":"CAN"},
-						{"from":"VC-pass","to":"Drive","connecttype":"CAN"},
-						
-						{"from":"PowerDist","to":"BSA","connecttype":"network"},
-						{"from":"BSA","to":"VC-start","connecttype":"network"},
-						{"from":"VC-start","to":"VC-pass","connecttype":"network"},
-						
-						{"from":"EO-IR","to":"RCWS-rcv","connecttype":"network"},
-						{"from":"RCWS-rcv","to":"RCWS-comm","connecttype":"network"},
-						{"from":"RCWS-comm","to":"Payload","connecttype":"CAN"},
-						{"from":"RCWS-comm","to":"EO-IR","connecttype":"CAN"},
-						
-						{"from":"RC-auth","to":"WL-reconn","connecttype":"network"},	
-						
-						{"from":"WL-reconn","to":"WL-trans","connecttype":"network"},						
-						{"from":"WL-trans","to":"RCWS-comm","connecttype":"network"},
-						{"from":"WL-trans","to":"VC-rcv","connecttype":"network"}		
-					]
-				},
-				"Vulnerability":[
-					{"key":"AP-sensor","figure":"None","type":"root"},
-					{"key":"AP-sensor-a","parent":"AP-sensor","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from wrong sensors information"},
-					
-					{"key":"AP-nav","figure":"None","type":"root"},
-					{"key":"AP-nav-a","parent":"AP-nav","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from wrong navigation information"},
-					
-					{"key":"AP-control","figure":"OrGate","type":"root"},
-					{"key":"AP-control_a", "parent":"AP-control","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from wrong sensors information"},
-					{"key":"v1", "name": "CVE-2019-11815", "parent":"AP-control","figure":"None","prob":0.59,"type":"vulnerability", "description": "Vulnerability that allow attacker crafted data stream to escalate to root."},
-					
-					{"key":"VC-rcv","figure":"OrGate","type":"root"},
-					{"key":"VC-rcv-a","parent":"VC-rcv","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from wrong sensors information"},
-					{"key":"v2", "name": "CVE-2023-48691", "parent":"VC-rcv","figure":"None","prob":0.59,"type":"vulnerability", "description": "Vulnerability that allow attacker remote code execution with no authentication, no user interaction, and through network access only"},
-					
-					{"key":"VC-pass","figure":"None","type":"root"},
-					{"key":"VC-pass-a","parent":"VC-pass","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from VC-rcv"},
-					
-					{"key":"VC-start","figure":"None","type":"root"},
-					{"key":"VC-start-a","parent":"VC-start","figure":"None","prob":0.59,"type":"vulnerability", "description": "Accessible from BCAN"},
-					
-					{"key":"RC-auth","figure":"None","type":"root"},
-					{"key":"v3", "name": "CVE-2021-3156", "parent":"RC-auth","figure":"None","prob":0.59,"type":"vulnerability allows attacker to escalate from user to root with physical access"},
-					
-					{"key":"WL-reconn","figure":"AndGate","type":"root"},
-					{"key":"v4","name":"CVE-2018-9311","parent":"WL-reconn","figure":"None","prob":1,"type":"vulnerability", "description": "Rougue ground station"},
-					{"key":"v5","name":"CVE-2018-9318","parent":"WL-reconn","figure":"None","prob":1,"type":"vulnerability", "description": "Rougue ground station"},
-					
-					{"key":"WL-trans","figure":"None","type":"root"},
-					{"key":"WL-trans-a","parent":"WL-trans","figure":"None","prob":0.59,"type":"accessible", "description": "Accessible from WL-reconn"},		
-					
-					{"key":"RCWS-rcv","figure":"None","type":"root"},
-					{"key":"RCWS-rcv-a","parent":"RCWS-rcv","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from EO-IR"},		
-					{"key":"RCWS-comm","figure":"None","type":"root"},
-					{"key":"RCWS-comm-a","parent":"RCWS-comm","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from WL-trans"},
-					
-					{"key":"Payload","figure":"None","type":"root"},
-					{"key":"Payload_a","parent":"Payload","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from RCWS-comm"},		
-					
-					{"key":"EO-IR","figure":"OrGate","type":"root"},
-					{"key":"v6", "name": "IR_false_obj","parent":"EO-IR","figure":"None","prob":0.59,"type":"vulnerability", "description": "Use of IR heat sources or reflective materials to create false objects or hide real ones in thermal imagery"},
-					{"key":"v7", "name": "CVE-2022-37061", "parent":"EO-IR","figure":"None","prob":0.59,"type":"vulnerability", "description": " The attacker exploit CVE-2022-37061 to execute commands as root."},
-					
-					{"key":"Camera","figure":"None","type":"root"},
-					{"key":"v9", "name": "Camera_bliding", "parent":"Camera","figure":"None","prob":0.59,"type":"accessable", "description": "Light overload causes failure to detect real objects"},		
-					
-					{"key":"Lidar","figure":"None","type":"root"},
-					{"key":"v10", "name": "Point_cloud_attack", "parent":"Lidar","figure":"None","prob":0.59,"type":"accessable", "description": "Patterned projections fool object detection algorithms"},	
-					
-					{"key":"Radar","figure":"None","type":"root"},
-					{"key":"v11", "name": "Radar_spoofing", "parent":"Radar","figure":"None","prob":0.59,"type":"accessable", "description": "False echoes injected into radar for phantom obstacles"},	
-					
-					{"key":"NavSys","figure":"None","type":"root"},
-					{"key": "v8", "name": "GNSS_Signal_Spoofing", "parent":"NavSys","figure":"None", "prob": 0.6, "type": "vulnerability","description": "The attacker deploys GNSS spoofers to transmit falsified satellite signals."},		
-					
-					{"key":"PowerDist","figure":"None","type":"root"},
-					{"key":"v12","name": "physical_access", "parent":"PowerDist","figure":"None","prob":0.59,"type":"accessable","description": "The attacker physical access and turn on the UGV."},		
-					{"key":"BSA","figure":"None","type":"root"},
-					{"key":"BSA_a","parent":"BSA","figure":"None","prob":0.59,"type":"accessable"},		
-							
-					{"key":"Steer","figure":"None","type":"root"},
-					{"key":"Steer_a","parent":"Steer","figure":"None","prob":0.59,"type":"accessable"},
-					{"key":"Brake","figure":"None","type":"root"},
-					{"key":"Brake_a","parent":"Brake","figure":"None","prob":0.59,"type":"accessable"},
-					{"key":"Drive","figure":"None","type":"root"},
-					{"key":"Drive_a","parent":"Drive","figure":"None","prob":0.59,"type":"accessable"}
-					
-					
-				]
-			}
+				 {
+	"Architecture":{
+		"nodeDataArray":[
+			{"key":"A","type":"special"},
+				
+			{"key":"AP-sensor","group":"AP","impact":4.93,"type":"component","attacksurface":false},				
+			{"key":"AP-nav","group":"AP","impact":4.93,"type":"component","attacksurface":false},
+			{"key":"AP-control","group":"AP","impact":4.93,"type":"component","attacksurface":false},
+			
+			{"key":"VC-rcv","group":"VC","impact":4.93,"type":"component","attacksurface":false},		
+			{"key":"VC-pass","group":"VC","impact":4.93,"type":"component","attacksurface":false},
+			{"key":"VC-start","group":"VC","impact":4.93,"type":"component","attacksurface":false},
+			
+			{"key":"RC-auth","group":"RC","impact":4.93,"type":"component","attacksurface":true},
+			
+			{"key":"WL-trans","group":"WL","impact":4.93,"type":"component","attacksurface":false},
+			{"key":"WL-reconn","group":"WL","impact":4.93,"type":"component","attacksurface":true},
+			
+			{"key":"PM-comm","group":"PM","impact":4.93,"type":"component","attacksurface":false},	
+			{"key":"PM-rcv","group":"PM","impact":4.93,"type":"component","attacksurface":false},
+			
+			{"key":"Camera","group":"sens_eth","impact":7,"type":"AccessNode","component":"Cam_p","attacksurface":true},
+			{"key":"Radar","group":"sens_eth","impact":7,"type":"AccessNode","component":"Rad_p","attacksurface":true},
+			{"key":"Lidar","group":"sens_eth","impact":7,"type":"AccessNode","component":"Lid_p","attacksurface":true},
+			{"key":"NavSys","group":"sens_eth","impact":7,"type":"AccessNode","component":"Nav_p","attacksurface":true},
+			
+			{"key":"Payload","group":"payload_eth","impact":4.93,"type":"AccessNode","component":"Payload_f","attacksurface":false},
+			{"key":"EO-IR","group":"payload_eth","impact":4.93,"type":"AccessNode","component":"OD_d","attacksurface":true},
+			
+			{"key":"PowerDist","group":"BCAN","impact":6,"type":"AccessNode","component":"PowerDist_c","attacksurface":true},
+			{"key":"BSA","group":"BCAN","impact":6,"type":"AccessNode","component":"BSA_c","attacksurface":false},
+			{"key":"PowerCon","group":"BCAN","impact":6,"type":"AccessNode","component":"PowerCon","attacksurface":false},
+			
+			{"key":"Steer","group":"CCAN","impact":6,"type":"AccessNode","component":"Steer_cc","attacksurface":false},
+			{"key":"Drive","group":"CCAN","impact":6,"type":"AccessNode","component":"Drive_cc","attacksurface":false},
+			{"key":"Brake","group":"CCAN","impact":6,"type":"AccessNode","component":"Brake_cc","attacksurface":false},
+			
+			{"key":"AP","isGroup":true,"type":"ECU"},
+			{"key":"WL","isGroup":true,"type":"ECU"},			
+			{"key":"PM","isGroup":true,"type":"ECU"},			
+			{"key":"VC","isGroup":true,"type":"ECU"},
+			{"key":"RC","isGroup":true,"type":"ECU"},
+			
+			{"key": "payload_eth", "isGroup": true, "type": "CANBUS"},
+			{"key": "sens_eth", "isGroup": true, "type": "CANBUS"},
+			{"key": "CCAN", "isGroup": true, "type": "CANBUS"},
+			{"key": "BCAN", "isGroup": true, "type": "CANBUS"},
+			{"key": "GNSS", "isGroup": true, "type": "CANBUS"}
+		],
+		"linkDataArray":[
+			{"from":"Camera","to":"AP-sensor","connecttype":"network"},
+			{"from":"NavSys","to":"AP-nav","connecttype":"network"},	
+			{"from":"Lidar","to":"AP-sensor","connecttype":"network"},
+			{"from":"Radar","to":"AP-sensor","connecttype":"network"},				
+			{"from":"AP-sensor","to":"AP-control","connecttype":"network"},
+			{"from":"AP-nav","to":"AP-control","connecttype":"network"},
+			
+			{"from":"AP-control","to":"VC-rcv","connecttype":"network"},
+			{"from":"VC-rcv","to":"VC-pass","connecttype":"network"},
+			{"from":"VC-pass","to":"Steer","connecttype":"CAN"},
+			{"from":"VC-pass","to":"Brake","connecttype":"CAN"},
+			{"from":"VC-pass","to":"Drive","connecttype":"CAN"},
+			
+			{"from":"PowerDist","to":"BSA","connecttype":"network"},
+			{"from":"BSA","to":"VC-start","connecttype":"network"},
+			{"from":"VC-start","to":"VC-pass","connecttype":"network"},
+			
+			{"from":"EO-IR","to":"PM-rcv","connecttype":"network"},
+			{"from":"PM-rcv","to":"PM-comm","connecttype":"network"},
+			{"from":"PM-comm","to":"Payload","connecttype":"CAN"},
+			{"from":"PM-comm","to":"EO-IR","connecttype":"CAN"},
+			
+			{"from":"RC-auth","to":"WL-reconn","connecttype":"network"},	
+			
+			{"from":"WL-reconn","to":"WL-trans","connecttype":"network"},						
+			{"from":"WL-trans","to":"PM-comm","connecttype":"network"},
+			{"from":"WL-trans","to":"VC-rcv","connecttype":"network"}		
+		]
+	},
+	"Vulnerability":[
+		{"key":"AP-sensor","figure":"None","type":"root"},
+		{"key":"AP-sensor-a","parent":"AP-sensor","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from wrong sensors information"},
+		
+		{"key":"AP-nav","figure":"None","type":"root"},
+		{"key":"AP-nav-a","parent":"AP-nav","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from wrong navigation information"},
+		
+		{"key":"AP-control","figure":"OrGate","type":"root"},
+		{"key":"AP-control_a", "parent":"AP-control","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from wrong sensors information"},
+		{"key":"v1", "name": "CVE-2019-11815", "parent":"AP-control","figure":"None","prob":0.59,"type":"vulnerability", "description": "Vulnerability that allow attacker crafted data stream to escalate to root."},
+		
+		{"key":"VC-rcv","figure":"OrGate","type":"root"},
+		{"key":"VC-rcv-a","parent":"VC-rcv","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from wrong sensors information"},
+		{"key":"v2", "name": "CVE-2023-48691", "parent":"VC-rcv","figure":"None","prob":0.59,"type":"vulnerability", "description": "Vulnerability that allow attacker remote code execution with no authentication, no user interaction, and through network access only"},
+		
+		{"key":"VC-pass","figure":"None","type":"root"},
+		{"key":"VC-pass-a","parent":"VC-pass","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from VC-rcv"},
+		
+		{"key":"VC-start","figure":"None","type":"root"},
+		{"key":"VC-start-a","parent":"VC-start","figure":"None","prob":0.59,"type":"vulnerability", "description": "Accessible from BCAN"},
+		
+		{"key":"RC-auth","figure":"None","type":"root"},
+		{"key":"v3", "name": "CVE-2021-3156", "parent":"RC-auth","figure":"None","prob":0.59,"type":"vulnerability allows attacker to escalate from user to root with physical access"},
+		
+		{"key":"WL-reconn","figure":"AndGate","type":"root"},
+		{"key":"v4","name":"CVE-2018-9311","parent":"WL-reconn","figure":"None","prob":1,"type":"vulnerability", "description": "Rougue ground station"},
+		{"key":"v5","name":"CVE-2018-9318","parent":"WL-reconn","figure":"None","prob":1,"type":"vulnerability", "description": "Rougue ground station"},
+		
+		{"key":"WL-trans","figure":"None","type":"root"},
+		{"key":"WL-trans-a","parent":"WL-trans","figure":"None","prob":0.59,"type":"accessible", "description": "Accessible from WL-reconn"},		
+		
+		{"key":"PM-rcv","figure":"None","type":"root"},
+		{"key":"PM-rcv-a","parent":"PM-rcv","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from EO-IR"},		
+		{"key":"PM-comm","figure":"None","type":"root"},
+		{"key":"PM-comm-a","parent":"PM-comm","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from WL-trans"},
+		
+		{"key":"Payload","figure":"None","type":"root"},
+		{"key":"Payload_a","parent":"Payload","figure":"None","prob":0.59,"type":"accessable", "description": "Accessible from PM-comm"},		
+		
+		{"key":"EO-IR","figure":"OrGate","type":"root"},
+		{"key":"v6", "name": "IR_false_obj","parent":"EO-IR","figure":"None","prob":0.59,"type":"vulnerability", "description": "Use of IR heat sources or reflective materials to create false objects or hide real ones in thermal imagery"},
+		{"key":"v7", "name": "CVE-2022-37061", "parent":"EO-IR","figure":"None","prob":0.59,"type":"vulnerability", "description": " The attacker exploit CVE-2022-37061 to execute commands as root."},
+		
+		{"key":"Camera","figure":"None","type":"root"},
+		{"key":"v9", "name": "Camera_bliding", "parent":"Camera","figure":"None","prob":0.59,"type":"accessable", "description": "Light overload causes failure to detect real objects"},		
+		
+		{"key":"Lidar","figure":"None","type":"root"},
+		{"key":"v10", "name": "Point_cloud_attack", "parent":"Lidar","figure":"None","prob":0.59,"type":"accessable", "description": "Patterned projections fool object detection algorithms"},	
+		
+		{"key":"Radar","figure":"None","type":"root"},
+		{"key":"v11", "name": "Radar_spoofing", "parent":"Radar","figure":"None","prob":0.59,"type":"accessable", "description": "False echoes injected into radar for phantom obstacles"},	
+		
+		{"key":"NavSys","figure":"None","type":"root"},
+		{"key": "v8", "name": "GNSS_Signal_Spoofing", "parent":"NavSys","figure":"None", "prob": 0.6, "type": "vulnerability","description": "The attacker deploys GNSS spoofers to transmit falsified satellite signals."},		
+		
+		{"key":"PowerDist","figure":"None","type":"root"},
+		{"key":"v12","name": "physical_access", "parent":"PowerDist","figure":"None","prob":0.59,"type":"accessable","description": "The attacker physical access and turn on the UGV."},		
+		{"key":"BSA","figure":"None","type":"root"},
+		{"key":"BSA_a","parent":"BSA","figure":"None","prob":0.59,"type":"accessable"},		
+				
+		{"key":"Steer","figure":"None","type":"root"},
+		{"key":"Steer_a","parent":"Steer","figure":"None","prob":0.59,"type":"accessable"},
+		{"key":"Brake","figure":"None","type":"root"},
+		{"key":"Brake_a","parent":"Brake","figure":"None","prob":0.59,"type":"accessable"},
+		{"key":"Drive","figure":"None","type":"root"},
+		{"key":"Drive_a","parent":"Drive","figure":"None","prob":0.59,"type":"accessable"}
+		
+		
+	]
+}
 			
                  </textarea>
                  <div>
